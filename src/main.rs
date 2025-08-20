@@ -33,6 +33,10 @@ fn main() {
             eprintln!("{}", e)
         }
     } else {
+		
+		if let Err(e) = set_working_directory(){
+			eprintln!("{}", e)
+		}
         if let Err(e) = backup_app_data() {
             eprintln!("{}", e)
         }
@@ -110,6 +114,19 @@ fn remove_task_seduler() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
+fn set_working_directory() -> Result<(), Box<dyn Error>> {
+    let my_app: std::path::PathBuf = env::current_exe()?;
+
+    let work_dir = my_app
+        .parent()
+        .ok_or("Failed to get parent directory")?
+        .display()
+        .to_string();
+
+    std::env::set_current_dir(&work_dir)?;
+    Ok(())
+}
+
 
 fn backup_local_data() -> Result<(), Box<dyn Error>> {
     let current_dir = env::current_dir()?;
@@ -124,7 +141,7 @@ fn backup_local_data() -> Result<(), Box<dyn Error>> {
     if Path::exists(&q_bittorrent_app_data_path) {
         println!("{}", q_bittorrent_app_data_path.display())
     }
-
+	
     let backupapp_data_path = Path::new(&current_dir).join("BackupAppData").join("Local");
 
     if !Path::exists(&backupapp_data_path) {
